@@ -39,6 +39,11 @@
   .btn.save{background:#1f9e94;color:#fff;}
   .btn.close{background:#f4f1ea;color:#2b3a4a;box-shadow:0 5px 0 rgba(0,0,0,.1);}
   .modal .hint{font-size:11px;color:#7a8694;margin:12px 2px 0;line-height:1.5;}
+  #toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);
+    z-index:45;background:#274f8c;color:#fff;font-weight:800;font-size:14px;
+    padding:12px 20px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.28);
+    opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;max-width:90vw;text-align:center;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:40;}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 </style>
@@ -55,6 +60,7 @@
   </div>
 
   <canvas id="confetti"></canvas>
+  <div id="toast"></div>
 
   <div class="overlay" id="overlay">
     <div class="modal">
@@ -109,19 +115,32 @@
   }
   function toggle(i){marked[i]=!marked[i];save();var bc=render();if(bc>prevBingo)celebrate(bc);prevBingo=bc;}
 
+  var toastTimer=null;
+  function showToast(msg){
+    var t=document.getElementById("toast");
+    t.innerHTML=msg; t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){t.classList.remove("show");},2600);
+  }
+
   function celebrate(bc){
     var isFull=(bc>=FULL);
-    var title=document.getElementById("modalTitle");
-    title.className=isFull?"full":"";
-    title.innerHTML=isFull?"フルBINGO!! 🎊👑":"BINGO! 🎉";
-    document.getElementById("modalSub").innerHTML=isFull
-      ?"全マス制覇、おめでとうございます！<br>最初の3名なら🎁ゲットかも！"
-      :(bc+"列そろいました！🎉<br>ハッシュタグで報告しよう！");
-    var text=isFull
-      ?"フルBINGO達成しました🎊👑 全マス制覇！ "+HASHTAG
-      :"BINGOしました🎉（"+bc+"列）"+HASHTAG;
-    document.getElementById("tweetBtn").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(text);
-    document.getElementById("overlay").classList.add("show");
+    // モーダルは「最初の1ビンゴ」と「フルビンゴ」のみ。途中はトーストで邪魔しない
+    if(bc===1 || isFull){
+      var title=document.getElementById("modalTitle");
+      title.className=isFull?"full":"";
+      title.innerHTML=isFull?"フルBINGO!! 🎊👑":"BINGO! 🎉";
+      document.getElementById("modalSub").innerHTML=isFull
+        ?"全マス制覇、おめでとうございます！<br>最初の3名なら🎁ゲットかも！"
+        :"はじめてのBINGO！🎉<br>ハッシュタグで報告しよう！";
+      var text=isFull
+        ?"フルBINGO達成しました🎊👑 全マス制覇！ "+HASHTAG
+        :"BINGOしました🎉 "+HASHTAG;
+      document.getElementById("tweetBtn").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(text);
+      document.getElementById("overlay").classList.add("show");
+    }else{
+      showToast("🎉 "+bc+"列BINGO！");
+    }
     fireConfetti();
   }
   document.getElementById("closeBtn").addEventListener("click",function(){document.getElementById("overlay").classList.remove("show");});
