@@ -131,11 +131,11 @@
       title.className=isFull?"full":"";
       title.innerHTML=isFull?"フルBINGO!! 🎊👑":"BINGO! 🎉";
       document.getElementById("modalSub").innerHTML=isFull
-        ?"全マス制覇、おめでとうございます！<br>最初の3名なら🎁ゲットかも！"
+        ?"全マス制覇、おめでとう🎉🎉<br>早速幹事の誰かに報告しよう！！"
         :"はじめてのBINGO！🎉<br>ハッシュタグで報告しよう！";
       var text=isFull
-        ?"フルBINGO達成しました🎊👑 全マス制覇！ "+HASHTAG
-        :"BINGOしました🎉 "+HASHTAG;
+        ?"おたのしみBINGO全マス制覇！フルBINGO達成っ🎊👑 "+HASHTAG
+        :"おたのしみBINGOで1BINGOしましたっ🎉 "+HASHTAG;
       document.getElementById("tweetBtn").href="https://twitter.com/intent/tweet?text="+encodeURIComponent(text);
       document.getElementById("overlay").classList.add("show");
     }else{
